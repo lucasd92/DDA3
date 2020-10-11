@@ -1965,10 +1965,14 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       mostrarLog: 0,
+      mostrargraf: 0,
       listaLogs: [],
       dispositivo: {
         id: '',
@@ -1990,10 +1994,16 @@ __webpack_require__.r(__webpack_exports__);
     this.$bus.$on('emit_graf', function (mensaje) {
       _this.dispositivo = mensaje;
       axios.get("/log_disp/".concat(mensaje.id)).then(function (res) {
-        _this.chartData = [['Fecha', 'Temperatura', 'Humedad']];
-        res.data.forEach(function (element) {
-          _this.chartData.push([element.timestamp, element.temperatura, element.humedad]);
-        });
+        if (res.data.length > 0) {
+          _this.chartData = [['Fecha', 'Temperatura', 'Humedad']];
+          res.data.forEach(function (element) {
+            _this.chartData.push([element.timestamp, element.temperatura, element.humedad]);
+          });
+          _this.mostrargraf = 1;
+        } else {
+          _this.mostrargraf = 0;
+        }
+
         _this.mostrarLog = 1;
       });
     });
@@ -2006,10 +2016,15 @@ __webpack_require__.r(__webpack_exports__);
       var _this2 = this;
 
       axios.get("/log_disp/".concat(this.dispositivo.id)).then(function (res) {
-        _this2.chartData = [['Fecha', 'Temperatura', 'Humedad']];
-        res.data.forEach(function (element) {
-          _this2.chartData.push([element.timestamp, element.temperatura, element.humedad]);
-        });
+        if (res.data.length > 0) {
+          _this2.chartData = [['Fecha', 'Temperatura', 'Humedad']];
+          res.data.forEach(function (element) {
+            _this2.chartData.push([element.timestamp, element.temperatura, element.humedad]);
+          });
+          _this2.mostrargraf = 1;
+        } else {
+          _this2.mostrargraf = 0;
+        }
       });
     },
     beforeDestroy: function beforeDestroy() {
@@ -37966,21 +37981,27 @@ var render = function() {
           )
         ]),
         _vm._v(" "),
-        _c(
-          "div",
-          { staticClass: "display: block" },
-          [
-            _c("GChart", {
-              attrs: {
-                type: "LineChart",
-                data: _vm.chartData,
-                options: _vm.chartOptions,
-                resizeDebounce: 500
-              }
-            })
-          ],
-          1
-        )
+        _vm.mostrargraf
+          ? _c(
+              "div",
+              { staticClass: "display: block" },
+              [
+                _c("GChart", {
+                  attrs: {
+                    type: "LineChart",
+                    data: _vm.chartData,
+                    options: _vm.chartOptions,
+                    resizeDebounce: 500
+                  }
+                })
+              ],
+              1
+            )
+          : _c("div", { staticClass: "display: block" }, [
+              _c("h6", [
+                _vm._v("No se encontraron registros hasta el momento.")
+              ])
+            ])
       ])
     : _vm._e()
 }
@@ -50902,8 +50923,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /home/lucas/IoT/DDA3/dda3final/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /home/lucas/IoT/DDA3/dda3final/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /home/lucas/IoT/DDA3/Laravel+Vue/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /home/lucas/IoT/DDA3/Laravel+Vue/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

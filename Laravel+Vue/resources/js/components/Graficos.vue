@@ -8,13 +8,16 @@
     <button class="btn btn-primary btn-sm" @click="actualizar()">Actualizar</button>
     </span>
 
-    <div class = "display: block">
-    <GChart
-        type="LineChart"
-        :data="chartData"
-        :options="chartOptions"
-        :resizeDebounce="500"
-    />
+    <div v-if="mostrargraf" class = "display: block">
+        <GChart
+            type="LineChart"
+            :data="chartData"
+            :options="chartOptions"
+            :resizeDebounce="500"
+        />
+    </div>
+    <div v-else class = "display: block">
+        <h6>No se encontraron registros hasta el momento.</h6>
     </div>
 </div>
 </template>
@@ -24,6 +27,7 @@ export default {
   data () {
     return {
         mostrarLog: 0,
+        mostrargraf: 0,
         listaLogs: [],
         dispositivo: {id:'',nombre:''},
       // Array will be automatically processed with visualization.arrayToDataTable function
@@ -42,12 +46,16 @@ export default {
     this.$bus.$on('emit_graf',(mensaje)=> {
         this.dispositivo = mensaje;
         axios.get(`/log_disp/${mensaje.id}`).then((res)=>{
-           
-                this.chartData = [['Fecha', 'Temperatura', 'Humedad']];
-                res.data.forEach(element => {
-                    this.chartData.push([element.timestamp,element.temperatura,element.humedad]);
-                });
-
+                if(res.data.length > 0){
+                    this.chartData = [['Fecha', 'Temperatura', 'Humedad']];
+                    res.data.forEach(element => {
+                        this.chartData.push([element.timestamp,element.temperatura,element.humedad]);
+                    });
+                    this.mostrargraf = 1;
+                }
+                else{
+                    this.mostrargraf = 0;
+                }
                 this.mostrarLog = 1;
             });
         });
@@ -58,10 +66,16 @@ export default {
         },
         actualizar(){
             axios.get(`/log_disp/${this.dispositivo.id}`).then((res)=>{
-                    this.chartData = [['Fecha', 'Temperatura', 'Humedad']];
-                    res.data.forEach(element => {
-                        this.chartData.push([element.timestamp,element.temperatura,element.humedad]);
-                    });
+                    if(res.data.length > 0){
+                        this.chartData = [['Fecha', 'Temperatura', 'Humedad']];
+                        res.data.forEach(element => {
+                            this.chartData.push([element.timestamp,element.temperatura,element.humedad]);
+                        });
+                        this.mostrargraf = 1;
+                    }
+                    else{
+                        this.mostrargraf = 0;
+                    }
                 });
         },
         beforeDestroy(){
