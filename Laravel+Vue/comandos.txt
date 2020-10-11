@@ -1,0 +1,23 @@
+alias laravel=/home/lucas/.config/composer/vendor/bin/laravel
+
+laravel new dda3final
+composer require laravel/ui
+php artisan ui vue --auth
+npm install
+
+
+php artisan make:model DispAceptados -m
+php artisan make:model DispNoAceptados -m
+php artisan make:model LogDatos -m
+
+php artisan migrate
+
+php artisan migrate:rollback (si algo sale mal)
+
+php artisan make:controller DispAcCtrl --resource
+php artisan make:controller DispNoAcCtrl --resource
+php artisan make:controller LogCtrl --resource
+
+npm run watch
+
+npm i vue-google-charts
