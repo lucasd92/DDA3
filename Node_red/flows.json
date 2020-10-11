@@ -1,0 +1,178 @@
+[
+    {
+        "id": "11822a1.c4663d6",
+        "type": "tab",
+        "label": "Flow_DDA3",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "e4d2de7b.7a8dd",
+        "type": "mqtt in",
+        "z": "11822a1.c4663d6",
+        "name": "",
+        "topic": "disp/#",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "8a94410b.19d54",
+        "x": 70,
+        "y": 220,
+        "wires": [
+            [
+                "7bd8d0f3.4a5cd"
+            ]
+        ]
+    },
+    {
+        "id": "31e5a081.ccd02",
+        "type": "mysql",
+        "z": "11822a1.c4663d6",
+        "mydb": "c1884c42.765df",
+        "name": "aceptados",
+        "x": 430,
+        "y": 220,
+        "wires": [
+            [
+                "be0292d5.c30e1",
+                "27c2fa30.7f5086"
+            ]
+        ]
+    },
+    {
+        "id": "7bd8d0f3.4a5cd",
+        "type": "function",
+        "z": "11822a1.c4663d6",
+        "name": "Query x nombre disp",
+        "func": "//mosquitto_pub -t 'disp' -m '{\"nombre\":\"asda3\",\"temperatura\":38,\"humedad\":55}'\nvar topic_size = String(msg.topic).split(\"/\");\nif(topic_size.length > 1){\n    return;\n}\nvar entrada = JSON.parse(msg.payload);\nvar out ={};\nout.topic = \"SELECT * FROM disp_aceptados WHERE nombre ='\" + entrada.nombre+\"';\"\nout.datos = msg.payload;\nreturn out;\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 240,
+        "y": 220,
+        "wires": [
+            [
+                "31e5a081.ccd02"
+            ]
+        ],
+        "inputLabels": [
+            "json"
+        ]
+    },
+    {
+        "id": "be0292d5.c30e1",
+        "type": "function",
+        "z": "11822a1.c4663d6",
+        "name": "encontrado? loguear",
+        "func": "var ret={};\nif(msg.payload.length === 1){\n    var datos = JSON.parse(msg.datos);\n    var out = \"INSERT INTO log_datos (dev_id,temperatura,humedad)\"\n    out = out + \"VALUES ('\" + msg.payload[0].id + \"','\" \n    out = out + datos.temperatura + \"','\" + datos.humedad + \"');\"\n    \n    ret.topic = out;\n    return ret;\n}\nelse\n\nreturn;\n\n\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 620,
+        "y": 220,
+        "wires": [
+            [
+                "1c959a62.323426"
+            ]
+        ]
+    },
+    {
+        "id": "1c959a62.323426",
+        "type": "mysql",
+        "z": "11822a1.c4663d6",
+        "mydb": "c1884c42.765df",
+        "name": "logs",
+        "x": 790,
+        "y": 220,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "27c2fa30.7f5086",
+        "type": "function",
+        "z": "11822a1.c4663d6",
+        "name": "query x nombre",
+        "func": "var out={};\nif(msg.payload.length === 0){\n    var datos = JSON.parse(msg.datos);\n    out.topic = \"SELECT * FROM disp_no_aceptados WHERE nombre ='\" + datos.nombre+\"';\"\n    //forwardeo solo el nombre\n    out.nombre = datos.nombre;\n    return out;\n}\nelse\n\nreturn;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 140,
+        "y": 300,
+        "wires": [
+            [
+                "9bdae73e.61f128"
+            ]
+        ]
+    },
+    {
+        "id": "9bdae73e.61f128",
+        "type": "mysql",
+        "z": "11822a1.c4663d6",
+        "mydb": "c1884c42.765df",
+        "name": "no aceptados",
+        "x": 360,
+        "y": 300,
+        "wires": [
+            [
+                "2e496808.4e7588"
+            ]
+        ]
+    },
+    {
+        "id": "2e496808.4e7588",
+        "type": "function",
+        "z": "11822a1.c4663d6",
+        "name": "no encontrado? agregar",
+        "func": "var ret={};\nif(msg.payload.length === 0){\n    var out = \"INSERT INTO disp_no_aceptados (nombre)\"\n    out = out + \"VALUES ('\" + msg.nombre + \"');\"\n    \n    ret.topic = out;\n    return ret;\n}\nelse\n\nreturn;\n\n\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 570,
+        "y": 300,
+        "wires": [
+            [
+                "66efd2b5.2fda5c"
+            ]
+        ]
+    },
+    {
+        "id": "66efd2b5.2fda5c",
+        "type": "mysql",
+        "z": "11822a1.c4663d6",
+        "mydb": "c1884c42.765df",
+        "name": "no aceptados",
+        "x": 800,
+        "y": 300,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "8a94410b.19d54",
+        "type": "mqtt-broker",
+        "z": "",
+        "name": "",
+        "broker": "localhost",
+        "port": "1883",
+        "clientid": "",
+        "usetls": false,
+        "compatmode": false,
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": ""
+    },
+    {
+        "id": "c1884c42.765df",
+        "type": "MySQLdatabase",
+        "z": "",
+        "name": "",
+        "host": "127.0.0.1",
+        "port": "3306",
+        "db": "dda3final",
+        "tz": ""
+    }
+]
